@@ -62,6 +62,20 @@ bare64-qemu_TIMEOUT = 360
 bare64-qemu: CONFIG=bare64-qemu
 bare64-qemu: all
 
+# config for bare-metal on reference model
+bare-refpipe_SIM = refpipe
+bare-refpipe_TESTS = bare
+bare-refpipe_RUNTIME = bare
+bare-refpipe_MODULE = osv
+bare-refpipe_ARCH = rv32
+bare-refpipe_GPOLICIES = 
+bare-refpipe_POLICIES = heap,stack,rwx
+bare-refpipe_XDIST = -n $(JOBS) # run in parallel
+bare-refpipe_TIMEOUT = 360
+bare-refpipe_PYTEST_ARGS = --extra=+bitstream=$(BITSTREAM),+processor=P1
+bare-refpipe: CONFIG=bare-refpipe
+bare-refpipe: all
+
 # config for bare-metal on VCU118 board
 bare-vcu118_SIM = vcu118
 bare-vcu118_TESTS = bare
@@ -272,7 +286,7 @@ build-tests: POLICIES ?= $($(CONFIG)_POLICIES)
 build-tests: XDIST ?= $($(CONFIG)_XDIST) # run in parallel
 build-tests: TIMEOUT ?= $($(CONFIG)_TIMEOUT)
 build-tests: build-dirs
-build-tests: build-policies
+build-tests:
 	$(PYTHON) -m pytest $(PYTEST_ARGS) $($(CONFIG)_PYTEST_ARGS)  --$(TEST_FORMAT)=$(CONFIG)_$(_DEBUG)_build_$(TEST_OUTPUT_FILE) $(XDIST) $(COLLECT_ONLY) -k test_build build_unit_tests.py
 
 build-dirs: SIM ?= $($(CONFIG)_SIM)
